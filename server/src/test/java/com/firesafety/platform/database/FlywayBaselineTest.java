@@ -22,6 +22,12 @@ class FlywayBaselineTest {
                 String.class);
 
         assertThat(tableNames).extracting(String::toLowerCase)
-                .contains("enterprise", "sys_user", "file_resource", "operation_log");
+                .contains(
+                        "enterprise",
+                        "sys_user",
+                        "file_resource",
+                        "operation_log",
+                        "permission_request",
+                        "station_message");
     }
 }

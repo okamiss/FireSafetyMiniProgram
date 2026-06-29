@@ -1,6 +1,1 @@
-<template>
-  <el-card shadow="never">
-    <template #header>消息通知</template>
-    <p>站内消息兜底，微信订阅消息按用户授权情况发送。</p>
-  </el-card>
-</template>
+<template><section class="work-section"><div class="section-toolbar"><div><h2>消息通知</h2></div></div><el-empty description="暂无消息" /></section></template>

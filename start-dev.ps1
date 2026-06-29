@@ -70,7 +70,7 @@ foreach ($definition in $definitions) {
 
     if ($shouldStart) {
         $arguments = "-NoProfile -ExecutionPolicy Bypass -File `"$runnerScript`" -ServiceName $($definition.Name) -ProjectRoot `"$projectRoot`""
-        $process = Start-Process -FilePath 'powershell.exe' -ArgumentList $arguments -WorkingDirectory $projectRoot -PassThru
+        $process = Start-Process -FilePath 'powershell.exe' -ArgumentList $arguments -WorkingDirectory $projectRoot -WindowStyle Hidden -PassThru
         $runtimeState.$($definition.Name) = New-DevProcessRecord -Process $process
         Write-Host "Started $($definition.Name) in PowerShell (PID $($process.Id))."
         Write-DevRuntime -Path $runtimePath -State $runtimeState

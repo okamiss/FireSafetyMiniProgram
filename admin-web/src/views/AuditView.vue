@@ -1,6 +1,1 @@
-<template>
-  <el-card shadow="never">
-    <template #header>操作日志</template>
-    <p>记录登录、审批、报修状态变更等关键操作。</p>
-  </el-card>
-</template>
+<template><section class="work-section"><div class="section-toolbar"><div><h2>操作日志</h2></div></div><el-empty description="暂无操作日志" /></section></template>

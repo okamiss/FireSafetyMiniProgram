@@ -26,6 +26,14 @@ app:
     refresh-ttl: ${REFRESH_TOKEN_TTL:30d}
   storage:
     local-root: ${FILE_STORAGE_ROOT:./data/files}
+  wechat:
+    app-id: ${WECHAT_APP_ID:}
+    app-secret: ${WECHAT_APP_SECRET:}
+    mock-enabled: ${WECHAT_MOCK_ENABLED:false}
+  bootstrap-admin:
+    username: ${BOOTSTRAP_ADMIN_USERNAME:}
+    password: ${BOOTSTRAP_ADMIN_PASSWORD:}
+    display-name: ${BOOTSTRAP_ADMIN_DISPLAY_NAME:系统管理员}
 
 management:
   endpoints:

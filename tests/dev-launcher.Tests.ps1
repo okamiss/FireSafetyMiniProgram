@@ -206,7 +206,7 @@ Invoke-Test 'stop dry-run prints owned process and Docker actions without changi
 Invoke-Test 'miniapp API base URL comes from Vite environment with fallback' {
     $httpSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'miniapp\src\api\http.ts')
     Assert-True ($httpSource -match 'import\.meta\.env\.VITE_API_BASE_URL') 'API source must read VITE_API_BASE_URL'
-    Assert-True ($httpSource -match 'https://example\.com/api') 'API source must retain the placeholder fallback'
+    Assert-True ($httpSource -match 'http://localhost:8080/api') 'API source must use the local development fallback'
 
     $envSource = Get-Content -Raw -LiteralPath (Join-Path $projectRoot 'miniapp\src\vite-env.d.ts')
     Assert-True ($envSource -match 'VITE_API_BASE_URL') 'Vite environment type must declare VITE_API_BASE_URL'

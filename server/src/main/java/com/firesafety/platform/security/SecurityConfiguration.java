@@ -2,9 +2,11 @@ package com.firesafety.platform.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.firesafety.platform.auth.SessionService;
+import com.firesafety.platform.organization.UserAccountRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -18,8 +20,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
     @Bean
-    SessionAuthenticationFilter sessionAuthenticationFilter(SessionService sessions) {
-        return new SessionAuthenticationFilter(sessions);
+    SessionAuthenticationFilter sessionAuthenticationFilter(
+            SessionService sessions, UserAccountRepository users) {
+        return new SessionAuthenticationFilter(sessions, users);
     }
 
     @Bean
@@ -31,7 +34,12 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/health", "/actuator/health", "/api/auth/**").permitAll()
+                        .requestMatchers("/api/health", "/actuator/health").permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/auth/admin-login",
+                                "/api/auth/wechat-login",
+                                "/api/auth/wechat-bind-phone",
+                                "/api/auth/refresh").permitAll()
                         .anyRequest().authenticated())
                 .exceptionHandling(errors -> errors
                         .authenticationEntryPoint((request, response, exception) -> ApiSecurityWriter.write(

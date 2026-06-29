@@ -11,7 +11,12 @@ function Get-DevServiceDefinitions {
             Arguments = @('spring-boot:run')
             Port = 8080
             WorkingDirectory = Join-Path $ProjectRoot 'server'
-            Environment = @{}
+            Environment = @{
+                BOOTSTRAP_ADMIN_USERNAME = 'admin'
+                BOOTSTRAP_ADMIN_PASSWORD = 'LocalAdmin123!'
+                BOOTSTRAP_ADMIN_DISPLAY_NAME = 'Local Admin'
+                WECHAT_MOCK_ENABLED = 'true'
+            }
         }
         [pscustomobject]@{
             Name = 'admin'
@@ -29,6 +34,7 @@ function Get-DevServiceDefinitions {
             WorkingDirectory = Join-Path $ProjectRoot 'miniapp'
             Environment = @{
                 VITE_API_BASE_URL = 'http://127.0.0.1:8080/api'
+                VITE_WECHAT_MOCK_ENABLED = 'true'
             }
         }
     )
