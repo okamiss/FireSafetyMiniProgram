@@ -151,6 +151,38 @@ Invoke-Test 'start dry-run prints all commands without changing runtime state' {
     Assert-Equal $after $before 'dry-run must not change runtime state'
 }
 
+Invoke-Test 'start dry-run does not require external commands on PATH' {
+    $emptyPath = Join-Path ([System.IO.Path]::GetTempPath()) ("fire-safety-empty-path-" + [guid]::NewGuid())
+    $originalPath = $env:PATH
+    New-Item -ItemType Directory -Path $emptyPath | Out-Null
+    try {
+        $env:PATH = $emptyPath
+        $output = Invoke-LauncherScript -ScriptName 'start-dev.ps1' -Arguments @('-DryRun')
+        Assert-True ($output -match 'mvn spring-boot:run') 'dependency-free dry-run must print the backend command'
+    }
+    finally {
+        $env:PATH = $originalPath
+        Remove-Item -LiteralPath $emptyPath -Recurse -Force
+    }
+}
+
+Invoke-Test 'HTTP wait honors its total timeout bound' {
+    $listener = New-Object System.Net.Sockets.TcpListener([System.Net.IPAddress]::Loopback, 0)
+    $listener.Start()
+    $port = ([System.Net.IPEndPoint]$listener.LocalEndpoint).Port
+    $stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+    try {
+        $result = Wait-DevHttp -Uri "http://127.0.0.1:$port/" -TimeoutSeconds 2
+    }
+    finally {
+        $stopwatch.Stop()
+        $listener.Stop()
+    }
+
+    Assert-True (-not $result) 'an unresponsive endpoint must not report success'
+    Assert-True ($stopwatch.Elapsed.TotalMilliseconds -le 2400) "HTTP wait exceeded its 2 second bound: $($stopwatch.Elapsed.TotalMilliseconds) ms"
+}
+
 Invoke-Test 'status JSON exposes stable service names' {
     $output = Invoke-LauncherScript -ScriptName 'status-dev.ps1' -Arguments @('-AsJson')
     $status = $output | ConvertFrom-Json

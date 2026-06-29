@@ -13,15 +13,6 @@ $miniappOutput = Join-Path $projectRoot 'miniapp\dist\dev\mp-weixin'
 
 . $commonScript
 
-$missingCommands = @('java', 'mvn', 'node', 'npm', 'docker') |
-    Where-Object { -not (Test-DevCommand -Name $_) }
-if ($missingCommands.Count -gt 0) {
-    throw "Missing required commands: $($missingCommands -join ', ')"
-}
-if (-not (Test-DevDockerReachable)) {
-    throw 'Docker is installed, but the Docker engine is not reachable.'
-}
-
 $definitions = @(Get-DevServiceDefinitions -ProjectRoot $projectRoot)
 if ($DryRun) {
     Write-Host "[DryRun] docker compose -f `"$composeFile`" up -d mysql redis"
@@ -35,6 +26,15 @@ if ($DryRun) {
     }
     Write-Host "[DryRun] Runtime state would be written to $(Get-DevRuntimePath -ProjectRoot $projectRoot)"
     exit 0
+}
+
+$missingCommands = @('java', 'mvn', 'node', 'npm', 'docker') |
+    Where-Object { -not (Test-DevCommand -Name $_) }
+if ($missingCommands.Count -gt 0) {
+    throw "Missing required commands: $($missingCommands -join ', ')"
+}
+if (-not (Test-DevDockerReachable)) {
+    throw 'Docker is installed, but the Docker engine is not reachable.'
 }
 
 & docker compose -f $composeFile up -d mysql redis

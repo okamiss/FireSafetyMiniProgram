@@ -127,14 +127,35 @@ function Wait-DevHttp {
     )
 
     $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
-    do {
-        if (Test-DevHttp -Uri $Uri -TimeoutSeconds 2) {
+    while ($true) {
+        $remaining = $deadline - [DateTime]::UtcNow
+        if ($remaining -le [TimeSpan]::Zero) {
+            return $false
+        }
+
+        $requestTimeoutSeconds = [int][Math]::Floor([Math]::Min(2, $remaining.TotalSeconds))
+        if ($requestTimeoutSeconds -lt 1) {
+            $tailSleepMilliseconds = [int][Math]::Floor($remaining.TotalMilliseconds)
+            if ($tailSleepMilliseconds -gt 0) {
+                Start-Sleep -Milliseconds $tailSleepMilliseconds
+            }
+            return $false
+        }
+
+        if (Test-DevHttp -Uri $Uri -TimeoutSeconds $requestTimeoutSeconds) {
             return $true
         }
-        Start-Sleep -Seconds 1
-    } while ([DateTime]::UtcNow -lt $deadline)
 
-    return $false
+        $remaining = $deadline - [DateTime]::UtcNow
+        if ($remaining -le [TimeSpan]::Zero) {
+            return $false
+        }
+
+        $sleepMilliseconds = [int][Math]::Min(1000, [Math]::Floor($remaining.TotalMilliseconds))
+        if ($sleepMilliseconds -gt 0) {
+            Start-Sleep -Milliseconds $sleepMilliseconds
+        }
+    }
 }
 
 function Read-DevRuntime {
