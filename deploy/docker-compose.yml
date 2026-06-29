@@ -1,0 +1,47 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: fire-safety-mysql
+    environment:
+      MYSQL_DATABASE: fire_safety
+      MYSQL_USER: fire_safety
+      MYSQL_PASSWORD: fire_safety
+      MYSQL_ROOT_PASSWORD: fire_safety_root
+      TZ: Asia/Shanghai
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:7.4-alpine
+    container_name: fire-safety-redis
+    ports:
+      - "6379:6379"
+
+  server:
+    build:
+      context: ../server
+    container_name: fire-safety-server
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/fire_safety?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai
+      DB_USERNAME: fire_safety
+      DB_PASSWORD: fire_safety
+    ports:
+      - "8080:8080"
+
+  admin-web:
+    build:
+      context: ..
+      dockerfile: admin-web/Dockerfile
+    container_name: fire-safety-admin-web
+    depends_on:
+      - server
+    ports:
+      - "80:80"
+
+volumes:
+  mysql_data:

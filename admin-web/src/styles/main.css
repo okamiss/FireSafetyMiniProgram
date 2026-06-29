@@ -1,0 +1,87 @@
+:root {
+  color: #1f2933;
+  font-family: "Microsoft YaHei", Arial, sans-serif;
+  background: #f4f7fb;
+}
+
+body {
+  margin: 0;
+}
+
+.admin-shell {
+  min-height: 100vh;
+}
+
+.admin-aside {
+  background: #ffffff;
+  border-right: 1px solid #d8e0ea;
+}
+
+.brand {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e4ebf3;
+}
+
+.brand-mark {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  color: #ffffff;
+  background: #d92d20;
+  border-radius: 8px;
+  place-items: center;
+  font-weight: 700;
+}
+
+.brand span {
+  display: block;
+  margin-top: 4px;
+  color: #667085;
+  font-size: 12px;
+}
+
+.admin-menu {
+  border-right: 0;
+}
+
+.admin-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 76px;
+  background: #ffffff;
+  border-bottom: 1px solid #d8e0ea;
+}
+
+.admin-header h1 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.admin-header p {
+  margin: 4px 0 0;
+  color: #667085;
+}
+
+.admin-main {
+  background: #f4f7fb;
+}
+
+.page-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.metric-label {
+  color: #667085;
+}
+
+.metric-value {
+  display: block;
+  margin: 10px 0;
+  font-size: 28px;
+}
