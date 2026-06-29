@@ -9,47 +9,32 @@
 
 ## 本地开发
 
-### 后端
+首次运行前，请先安装各端依赖，并确保 Java 21、Maven、Node.js、npm、Docker 与 Docker Compose 可用。仓库根目录提供统一的本地开发脚本：
 
 ```powershell
-$mavenDir = Join-Path $env:TEMP 'apache-maven-3.9.11'
-& (Join-Path $mavenDir 'bin\mvn.cmd') test
-& (Join-Path $mavenDir 'bin\mvn.cmd') spring-boot:run
+.\start-dev.ps1
+.\status-dev.ps1
+.\stop-dev.ps1
 ```
 
-健康检查：
+`start-dev.ps1` 会通过 Docker Compose 启动 MySQL 和 Redis，并在独立 PowerShell 窗口中启动缺失的后端、管理后台和小程序开发进程。可先使用 `.\start-dev.ps1 -DryRun` 查看计划执行的命令；该模式不会修改容器或打开窗口。`stop-dev.ps1` 只停止启动器记录的进程，不会结束启动脚本前已占用 `8080` 或 `5173` 端口的进程，MySQL 持久化卷也会保留。
+
+启动后可访问：
 
 ```text
-GET http://localhost:8080/api/health
+后端健康检查：http://localhost:8080/api/health
+管理后台：http://localhost:5173
 ```
 
-### 管理后台
-
-```powershell
-cd admin-web
-npm install
-npm run dev
-```
-
-访问：
+小程序开发进程将接口地址设置为 `http://127.0.0.1:8080/api`。使用微信开发者工具导入：
 
 ```text
-http://localhost:5173
+miniapp/dist/dev/mp-weixin
 ```
 
-### 微信小程序
+本机模拟器联调时，需要在微信开发者工具中关闭“不校验合法域名、web-view（业务域名）、TLS 版本以及 HTTPS 证书”的域名校验。真机不能使用 `127.0.0.1` 访问电脑服务；真机联调需改用同一局域网内可访问的电脑地址，正式环境必须使用已在微信公众平台配置的 HTTPS 合法域名。
 
-```powershell
-cd miniapp
-npm install --registry=https://registry.npmmirror.com
-npm run build:mp-weixin
-```
-
-然后使用微信开发者工具导入：
-
-```text
-miniapp/dist/build/mp-weixin
-```
+仍可按需分别进入 `server`、`admin-web` 或 `miniapp` 目录运行原有 Maven/npm 命令。生产构建的小程序导入目录仍为 `miniapp/dist/build/mp-weixin`。
 
 ## 标准方案模块
 

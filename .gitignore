@@ -6,11 +6,13 @@ admin-web/node_modules/
 admin-web/dist/
 miniapp/node_modules/
 miniapp/dist/
+*.tsbuildinfo
 
 # Logs and local config
 *.log
 .env
 .env.*
+.dev-runtime/
 
 # IDE
 .idea/
