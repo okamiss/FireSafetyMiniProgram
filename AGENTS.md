@@ -34,14 +34,14 @@
 按以下顺序理解项目：
 
 1. 当前用户指令和已确认的变更范围。
-2. `09-甲方一次性交付需求确认与费用清单.docx`：当前一次性交付确认口径。
-3. `05-项目范围确认书.docx`、`01-项目建设方案.docx`：范围、费用和总体方案。
-4. `08-验收测试用例.docx`：验收场景和结果要求。
-5. `02` 至 `04`、`06`、`07` 系列文档：业务规则、产品体验、合规安全、上线配合和操作说明。
-6. `11-需求详细说明与扩展分析.docx`：用于识别扩展项，不表示所有内容已纳入标准范围。
+2. `PRD/09-甲方一次性交付需求确认与费用清单.docx`：当前一次性交付确认口径。
+3. `PRD/05-项目范围确认书.docx`、`PRD/01-项目建设方案.docx`：范围、费用和总体方案。
+4. `PRD/08-验收测试用例.docx`：验收场景和结果要求。
+5. `PRD/02` 至 `PRD/04`、`PRD/06`、`PRD/07` 系列文档：业务规则、产品体验、合规安全、上线配合和操作说明。
+6. `PRD/11-需求详细说明与扩展分析.docx`：用于识别扩展项，不表示所有内容已纳入标准范围。
 7. `README.md`、各模块清单和源码：当前可运行能力、版本与命令。
 
-根目录 Word 文档属于交付依据。修改前先确认用途和当前版本，保留版式；不要因为文件名相近就覆盖较新的甲方确认稿。
+`PRD` 目录中的 Word 和 Markdown 文档属于需求及交付依据。修改前先确认用途和当前版本，保留版式；不要因为文件名相近就覆盖较新的甲方确认稿。
 
 ## 4. 仓库架构
 
@@ -52,7 +52,7 @@
 | `miniapp` | 微信小程序端用户流程 | 使用 uni-app API，适配微信权限、生命周期和审核约束 |
 | `deploy` | Docker Compose 和 Nginx 部署 | 配置不得包含真实生产密钥；变更后验证 Compose 和反向代理 |
 | `docs` | 技术设计、实施计划和项目辅助文档 | 行为或命令变化时同步维护 |
-| 根目录业务文档 | 需求、范围、费用、验收和甲方确认材料 | 是业务边界依据，不作为随意重写的代码注释 |
+| `PRD` | 需求、范围、费用、验收和甲方确认材料 | 是业务边界依据，不作为随意重写的代码注释 |
 
 当前请求链路：
 
@@ -306,3 +306,41 @@ docker compose -f deploy/docker-compose.yml ps
 - 安全、权限、企业隔离、状态迁移和审计要求没有被客户端绕过。
 - `git diff` 中没有无关修改、生成物、密钥或个人数据。
 - 用户可见行为、部署方式或验收口径发生变化时，已同步更新对应说明和验收材料。
+
+
+## CodeGraph (Required)
+
+This repository uses CodeGraph.
+
+Before performing code analysis, debugging, refactoring, or feature implementation:
+
+- Use CodeGraph MCP tools as the primary navigation mechanism.
+- Use CodeGraph to locate symbols, references, callers, callees, dependencies, and impact scope.
+- Use CodeGraph to understand architecture before reading files.
+- Determine affected code paths before making changes.
+
+Do NOT start with:
+
+- grep
+- ripgrep
+- find
+- global text search
+- reading large portions of the repository
+
+Read source files only after the relevant locations have been identified through CodeGraph.
+
+If CodeGraph is not initialized:
+
+```bash
+codegraph init -i
+```
+
+Preferred workflow:
+
+1. Analyze repository structure with CodeGraph.
+2. Locate relevant symbols and references.
+3. Trace dependencies and call chains.
+4. Determine impact scope.
+5. Read only necessary files.
+6. Implement changes.
+7. Verify changes.
