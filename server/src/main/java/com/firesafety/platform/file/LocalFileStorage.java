@@ -35,6 +35,19 @@ public class LocalFileStorage implements FileStorage {
         return new StoredFile(storageKey.replace('\\', '/'), safeOriginalName, contentType, content.length);
     }
 
+    @Override
+    public byte[] load(String storageKey) {
+        var source = root.resolve(storageKey).normalize();
+        if (!source.startsWith(root)) {
+            throw new IllegalArgumentException("Invalid storage path");
+        }
+        try {
+            return Files.readAllBytes(source);
+        } catch (IOException exception) {
+            throw new IllegalStateException("Unable to load file", exception);
+        }
+    }
+
     private String safeOriginalName(String originalName) {
         if (originalName == null || originalName.isBlank()) {
             return "file";

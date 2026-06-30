@@ -76,6 +76,44 @@
 .detail-list { margin-top: 24rpx; }
 .detail-list > view { display: flex; padding: 24rpx 0; justify-content: space-between; border-bottom: 1rpx solid #eaecf0; font-size: 27rpx; }
 .detail-list > view:last-child { border-bottom: 0; }
+.repair-tabs { display: grid; grid-template-columns: repeat(2, 1fr); margin-bottom: 20rpx; background: #fff; border: 1rpx solid #d0d5dd; border-radius: 8rpx; overflow: hidden; }
+.repair-tab { height: 76rpx; color: #667085; text-align: center; font-size: 27rpx; line-height: 76rpx; }
+.repair-tab.active { color: #fff; background: #475467; font-weight: 600; }
+.repair-card { margin-bottom: 16rpx; padding: 26rpx; background: #fff; border: 1rpx solid #e4e7ec; border-radius: 8rpx; }
+.repair-card-head, .repair-card-foot, .detail-heading, .photo-heading { display: flex; align-items: center; justify-content: space-between; }
+.repair-card-title { font-size: 30rpx; font-weight: 700; }
+.repair-location { display: block; margin: 16rpx 0; color: #475467; font-size: 26rpx; }
+.repair-card-foot { color: #98a2b3; font-size: 22rpx; }
+.repair-status { display: inline-block; padding: 6rpx 12rpx; border-radius: 6rpx; font-size: 22rpx; }
+.repair-status-pending_acceptance { color: #854a0e; background: #fef0c7; }
+.repair-status-processing { color: #175cd3; background: #eff8ff; }
+.repair-status-completed { color: #05603a; background: #d1fadf; }
+.repair-status-closed { color: #475467; background: #eaecf0; }
+.repair-detail-panel .section-title { margin: 0; }
+.detail-close, .photo-add { color: #b42318; font-size: 25rpx; }
+.repair-detail-panel > .repair-status { margin: 22rpx 0; }
+.repair-detail-row { display: flex; padding: 18rpx 0; justify-content: space-between; border-bottom: 1rpx solid #eaecf0; font-size: 26rpx; }
+.repair-detail-row text:first-child { color: #667085; }
+.repair-detail-row text:last-child { max-width: 68%; text-align: right; }
+.repair-description, .repair-result { margin-top: 20rpx; padding: 20rpx; color: #344054; background: #f9fafb; border-radius: 6rpx; font-size: 26rpx; line-height: 1.65; }
+.repair-result text { display: block; }
+.repair-result text:first-child { margin-bottom: 8rpx; color: #05603a; font-weight: 600; }
+.detail-subtitle { display: block; margin: 30rpx 0 14rpx; font-size: 28rpx; font-weight: 700; }
+.attachment-item { display: flex; padding: 18rpx 0; justify-content: space-between; color: #475467; border-bottom: 1rpx solid #eaecf0; font-size: 25rpx; }
+.attachment-item text { color: #b42318; }
+.history-item { display: grid; grid-template-columns: 24rpx 1fr; gap: 14rpx; padding: 10rpx 0 20rpx; }
+.history-dot { width: 16rpx; height: 16rpx; margin-top: 9rpx; background: #c4322b; border-radius: 50%; }
+.history-item text { display: block; font-size: 25rpx; }
+.history-time { margin-top: 6rpx; color: #98a2b3; font-size: 21rpx !important; }
+.repair-form .field { width: 100%; min-height: 82rpx; padding: 0 20rpx; background: #f9fafb; border: 1rpx solid #d0d5dd; border-radius: 8rpx; box-sizing: border-box; }
+.field-label { display: block; margin: 22rpx 0 10rpx; color: #344054; font-size: 25rpx; }
+.picker-field { line-height: 82rpx; }
+.textarea-field { height: 190rpx; padding-top: 18rpx !important; line-height: 1.6; }
+.photo-heading .field-label { margin-bottom: 10rpx; }
+.photo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12rpx; }
+.photo-item { position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 6rpx; }
+.photo-item image { width: 100%; height: 100%; }
+.photo-item text { position: absolute; right: 0; bottom: 0; padding: 6rpx 12rpx; color: #fff; background: rgba(0, 0, 0, .65); font-size: 21rpx; }
 
 .section-title {
   display: block;

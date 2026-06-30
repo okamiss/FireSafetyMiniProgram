@@ -1,4 +1,9 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
+
+export function authorizationHeader(): Record<string, string> {
+  const token = uni.getStorageSync('miniapp_token') as string
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
 
 export interface ApiResponse<T> {
   status: 'ok' | 'error'
@@ -9,14 +14,13 @@ export interface ApiResponse<T> {
 
 export function request<T>(path: string, options: Partial<UniApp.RequestOptions> = {}): Promise<T> {
   return new Promise((resolve, reject) => {
-    const token = uni.getStorageSync('miniapp_token') as string
     uni.request({
       ...options,
       url: `${API_BASE_URL}${path}`,
       header: {
         'Content-Type': 'application/json',
         ...(options.header || {}),
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...authorizationHeader(),
       },
       success: (response) => {
         const body = response.data as ApiResponse<T>

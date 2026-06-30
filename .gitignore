@@ -1,5 +1,6 @@
 # Java
 server/target/
+server/data/
 
 # Node
 admin-web/node_modules/

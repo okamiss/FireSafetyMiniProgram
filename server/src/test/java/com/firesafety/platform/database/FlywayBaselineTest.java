@@ -28,6 +28,8 @@ class FlywayBaselineTest {
                         "file_resource",
                         "operation_log",
                         "permission_request",
-                        "station_message");
+                        "station_message",
+                        "repair_ticket",
+                        "repair_history");
     }
 }
