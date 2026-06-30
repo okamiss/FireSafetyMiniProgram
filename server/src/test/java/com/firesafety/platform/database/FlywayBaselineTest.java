@@ -30,6 +30,12 @@ class FlywayBaselineTest {
                         "permission_request",
                         "station_message",
                         "repair_ticket",
-                        "repair_history");
+                        "repair_history",
+                        "training_question",
+                        "training_task",
+                        "training_participant",
+                        "training_record",
+                        "training_answer_detail",
+                        "training_certificate");
     }
 }
