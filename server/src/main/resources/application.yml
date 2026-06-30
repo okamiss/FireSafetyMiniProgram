@@ -30,6 +30,15 @@ app:
     app-id: ${WECHAT_APP_ID:}
     app-secret: ${WECHAT_APP_SECRET:}
     mock-enabled: ${WECHAT_MOCK_ENABLED:false}
+  wechat-subscribe:
+    enabled: ${WECHAT_SUBSCRIBE_ENABLED:false}
+    permission-template-id: ${WECHAT_PERMISSION_TEMPLATE_ID:}
+    repair-template-id: ${WECHAT_REPAIR_TEMPLATE_ID:}
+    training-template-id: ${WECHAT_TRAINING_TEMPLATE_ID:}
+    title-key: ${WECHAT_SUBSCRIBE_TITLE_KEY:thing1}
+    content-key: ${WECHAT_SUBSCRIBE_CONTENT_KEY:thing2}
+    time-key: ${WECHAT_SUBSCRIBE_TIME_KEY:time3}
+    miniprogram-state: ${WECHAT_MINIPROGRAM_STATE:formal}
   bootstrap-admin:
     username: ${BOOTSTRAP_ADMIN_USERNAME:}
     password: ${BOOTSTRAP_ADMIN_PASSWORD:}

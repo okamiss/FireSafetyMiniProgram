@@ -22,8 +22,9 @@ public class TrainingConfiguration {
             TrainingTaskRepository tasks,
             TrainingParticipantRepository participants,
             UserAccountRepository users,
+            TrainingNotificationPort notifications,
             Clock clock) {
-        return new TrainingManagementService(questions, tasks, participants, users, clock);
+        return new TrainingManagementService(questions, tasks, participants, users, notifications, clock);
     }
 
     @Bean

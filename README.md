@@ -20,8 +20,11 @@
 - 小程序完成在线答题，多选题必须完全匹配才得分，系统保存每次答案、成绩和最高分。
 - 培训通过后自动生成带编号的 PDF 证书，小程序和管理后台均通过受保护接口查看。
 - 管理后台可查询培训任务、答题记录和证书，答题记录包含任务、人员、企业、次数和成绩。
+- 权限审核、报修状态和培训任务统一写入站内消息；小程序支持全部/未读查看和已读状态。
+- 微信订阅消息在业务事务提交后独立发送，未配置、未授权或平台拒绝均保留可审计状态，不影响主业务结果。
+- 管理后台可按消息类型和微信发送状态查询通知记录。
 
-完整消息中心、看板、通用导入导出和操作日志查询仍按一次性交付计划继续开发。
+看板、通用导入导出和操作日志查询仍按一次性交付计划继续开发。
 
 ## 消防培训说明
 
@@ -62,7 +65,14 @@
 - `WECHAT_APP_ID`
 - `WECHAT_APP_SECRET`
 - `WECHAT_MOCK_ENABLED=false`
+- `WECHAT_SUBSCRIBE_ENABLED=true`
+- `WECHAT_PERMISSION_TEMPLATE_ID`、`WECHAT_REPAIR_TEMPLATE_ID`、`WECHAT_TRAINING_TEMPLATE_ID`
 - 小程序构建变量 `VITE_API_BASE_URL=https://已配置的合法域名/api`
+
+订阅模板的字段键默认使用 `thing1`、`thing2`、`time3`。若甲方申请的模板字段不同，分别通过
+`WECHAT_SUBSCRIBE_TITLE_KEY`、`WECHAT_SUBSCRIBE_CONTENT_KEY`、`WECHAT_SUBSCRIBE_TIME_KEY` 配置；
+体验版联调还需设置 `WECHAT_MINIPROGRAM_STATE=trial`。微信消息送达依赖用户授权、模板审核和平台规则，
+系统只保证站内消息可查询，并记录微信发送结果，不承诺百分之百送达。
 
 模拟器联调可在微信开发者工具中关闭域名校验。真机联调需把 `VITE_API_BASE_URL` 改为同一局域网内可访问的电脑地址；真机不能使用 `127.0.0.1` 访问电脑上的后端。正式接口域名必须是微信公众平台已配置的 HTTPS 合法域名。
 

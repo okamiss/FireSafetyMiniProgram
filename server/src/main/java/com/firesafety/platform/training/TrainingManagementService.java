@@ -16,6 +16,7 @@ public class TrainingManagementService {
     private final TrainingTaskRepository tasks;
     private final TrainingParticipantRepository participants;
     private final UserAccountRepository users;
+    private final TrainingNotificationPort notifications;
     private final Clock clock;
 
     public TrainingManagementService(
@@ -23,11 +24,13 @@ public class TrainingManagementService {
             TrainingTaskRepository tasks,
             TrainingParticipantRepository participants,
             UserAccountRepository users,
+            TrainingNotificationPort notifications,
             Clock clock) {
         this.questions = questions;
         this.tasks = tasks;
         this.participants = participants;
         this.users = users;
+        this.notifications = notifications;
         this.clock = clock;
     }
 
@@ -55,6 +58,7 @@ public class TrainingManagementService {
             throw new BusinessException("NO_TRAINING_PARTICIPANTS", "没有找到可参训的启用账号");
         }
         participants.saveAll(assignments);
+        notifications.taskPublished(task, assignments);
         return tasks.save(task);
     }
 

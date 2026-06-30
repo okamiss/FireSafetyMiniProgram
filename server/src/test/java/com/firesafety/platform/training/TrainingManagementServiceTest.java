@@ -31,6 +31,7 @@ class TrainingManagementServiceTest {
     @Mock private TrainingTaskRepository tasks;
     @Mock private TrainingParticipantRepository participants;
     @Mock private UserAccountRepository users;
+    @Mock private TrainingNotificationPort notifications;
     private final Clock clock = Clock.fixed(Instant.parse("2026-06-30T00:00:00Z"), ZoneOffset.UTC);
     private final SessionPrincipal operator = new SessionPrincipal(1L, UserRole.PLATFORM_OPERATOR, null, "运营");
 
@@ -48,7 +49,7 @@ class TrainingManagementServiceTest {
         var disabledEmployee = user(33L, 10L, UserRole.EMPLOYEE, false);
         when(users.findAll()).thenReturn(List.of(enterpriseEmployee, explicitEmployee, disabledEmployee));
         when(tasks.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
-        var service = new TrainingManagementService(questions, tasks, participants, users, clock);
+        var service = new TrainingManagementService(questions, tasks, participants, users, notifications, clock);
 
         var published = service.publish(operator, 9L);
 
@@ -69,7 +70,7 @@ class TrainingManagementServiceTest {
                 Instant.parse("2026-06-28T00:00:00Z"), null);
         when(tasks.findByIdForUpdate(9L)).thenReturn(Optional.of(task));
         when(questions.findAllById(Set.of(101L))).thenReturn(List.of(question(101L, 50)));
-        var service = new TrainingManagementService(questions, tasks, participants, users, clock);
+        var service = new TrainingManagementService(questions, tasks, participants, users, notifications, clock);
 
         assertThatThrownBy(() -> service.publish(operator, 9L))
                 .isInstanceOf(BusinessException.class)
@@ -85,7 +86,7 @@ class TrainingManagementServiceTest {
                 QuestionType.TRUE_FALSE, "题目二", java.util.Map.of("TRUE", "正确", "FALSE", "错误"),
                 Set.of("TRUE"), 50, "消防常识", null);
         when(questions.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
-        var service = new TrainingManagementService(questions, tasks, participants, users, clock);
+        var service = new TrainingManagementService(questions, tasks, participants, users, notifications, clock);
 
         var imported = service.importQuestions(operator, List.of(first, second));
 

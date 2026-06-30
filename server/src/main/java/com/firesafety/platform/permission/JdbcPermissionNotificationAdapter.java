@@ -1,14 +1,15 @@
 package com.firesafety.platform.permission;
 
-import org.springframework.jdbc.core.JdbcTemplate;
+import com.firesafety.platform.message.CreateStationMessageCommand;
+import com.firesafety.platform.message.StationMessageService;
 import org.springframework.stereotype.Component;
 
 @Component
 public class JdbcPermissionNotificationAdapter implements PermissionNotificationPort {
-    private final JdbcTemplate jdbc;
+    private final StationMessageService messages;
 
-    public JdbcPermissionNotificationAdapter(JdbcTemplate jdbc) {
-        this.jdbc = jdbc;
+    public JdbcPermissionNotificationAdapter(StationMessageService messages) {
+        this.messages = messages;
     }
 
     @Override
@@ -22,10 +23,8 @@ public class JdbcPermissionNotificationAdapter implements PermissionNotification
     }
 
     private void save(PermissionRequest request, String title, String content) {
-        jdbc.update("""
-                INSERT INTO station_message
-                    (enterprise_id, recipient_user_id, message_type, title, content, business_type, business_id)
-                VALUES (?, ?, 'PERMISSION_REQUEST', ?, ?, 'PERMISSION_REQUEST', ?)
-                """, request.enterpriseId(), request.applicantUserId(), title, content, request.id());
+        messages.create(new CreateStationMessageCommand(
+                request.enterpriseId(), request.applicantUserId(), "PERMISSION_REQUEST", title, content,
+                "PERMISSION_REQUEST", request.id()));
     }
 }
