@@ -46,7 +46,7 @@ class AuthControllerTest {
     @Test
     void adminLoginReturnsStableSessionContract() throws Exception {
         var principal = new SessionPrincipal(1L, UserRole.SUPER_ADMIN, null, "系统管理员");
-        when(adminAuthentication.login("admin", "StrongPass123"))
+        when(adminAuthentication.login("admin", "StrongPass123", "127.0.0.1"))
                 .thenReturn(new AuthenticationResult(principal, new SessionTokens("access", "refresh", 7200)));
 
         mockMvc.perform(post("/api/auth/admin-login")

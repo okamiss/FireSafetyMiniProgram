@@ -65,7 +65,7 @@ class PermissionRequestControllerTest {
         var request = PermissionRequest.employee(20L, 11L, "李四", "13900000000");
         request.assignId(7L);
         request.approve(1L, "资料已核验");
-        when(service.approve(principal, 7L, "资料已核验")).thenReturn(request);
+        when(service.approve(principal, 7L, "资料已核验", "127.0.0.1")).thenReturn(request);
 
         mockMvc.perform(post("/api/admin/permission-requests/7/approve")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -73,6 +73,6 @@ class PermissionRequestControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.status").value("APPROVED"));
 
-        verify(service).approve(principal, 7L, "资料已核验");
+        verify(service).approve(principal, 7L, "资料已核验", "127.0.0.1");
     }
 }

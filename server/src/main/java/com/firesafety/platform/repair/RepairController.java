@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -59,24 +60,27 @@ public class RepairController {
     @PreAuthorize("hasAnyRole('SUPER_ADMIN','PLATFORM_OPERATOR')")
     public ApiResponse<RepairResponse> accept(
             @AuthenticationPrincipal SessionPrincipal principal, @PathVariable Long id,
-            @Valid @RequestBody RemarkRequest request) {
-        return ApiResponse.ok(RepairResponse.from(service.accept(principal, id, request.remark())));
+            @Valid @RequestBody RemarkRequest request, HttpServletRequest httpRequest) {
+        return ApiResponse.ok(RepairResponse.from(
+                service.accept(principal, id, request.remark(), httpRequest.getRemoteAddr())));
     }
 
     @PostMapping("/api/admin/repairs/{id}/complete")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN','PLATFORM_OPERATOR')")
     public ApiResponse<RepairResponse> complete(
             @AuthenticationPrincipal SessionPrincipal principal, @PathVariable Long id,
-            @Valid @RequestBody RemarkRequest request) {
-        return ApiResponse.ok(RepairResponse.from(service.complete(principal, id, request.remark())));
+            @Valid @RequestBody RemarkRequest request, HttpServletRequest httpRequest) {
+        return ApiResponse.ok(RepairResponse.from(
+                service.complete(principal, id, request.remark(), httpRequest.getRemoteAddr())));
     }
 
     @PostMapping("/api/admin/repairs/{id}/close")
     @PreAuthorize("hasAnyRole('SUPER_ADMIN','PLATFORM_OPERATOR')")
     public ApiResponse<RepairResponse> close(
             @AuthenticationPrincipal SessionPrincipal principal, @PathVariable Long id,
-            @Valid @RequestBody RemarkRequest request) {
-        return ApiResponse.ok(RepairResponse.from(service.close(principal, id, request.remark())));
+            @Valid @RequestBody RemarkRequest request, HttpServletRequest httpRequest) {
+        return ApiResponse.ok(RepairResponse.from(
+                service.close(principal, id, request.remark(), httpRequest.getRemoteAddr())));
     }
 
     public record CreateRepairRequest(

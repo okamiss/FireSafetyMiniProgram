@@ -5,6 +5,7 @@ import com.firesafety.platform.common.ApiResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.Instant;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -51,8 +52,10 @@ public class PermissionRequestController {
     public ApiResponse<PermissionRequestResponse> approve(
             @AuthenticationPrincipal SessionPrincipal principal,
             @PathVariable Long id,
-            @Valid @RequestBody ReviewRequest request) {
-        return ApiResponse.ok(PermissionRequestResponse.from(service.approve(principal, id, request.remark())));
+            @Valid @RequestBody ReviewRequest request,
+            HttpServletRequest httpRequest) {
+        return ApiResponse.ok(PermissionRequestResponse.from(
+                service.approve(principal, id, request.remark(), httpRequest.getRemoteAddr())));
     }
 
     @PostMapping("/api/admin/permission-requests/{id}/reject")
@@ -60,8 +63,10 @@ public class PermissionRequestController {
     public ApiResponse<PermissionRequestResponse> reject(
             @AuthenticationPrincipal SessionPrincipal principal,
             @PathVariable Long id,
-            @Valid @RequestBody ReviewRequest request) {
-        return ApiResponse.ok(PermissionRequestResponse.from(service.reject(principal, id, request.remark())));
+            @Valid @RequestBody ReviewRequest request,
+            HttpServletRequest httpRequest) {
+        return ApiResponse.ok(PermissionRequestResponse.from(
+                service.reject(principal, id, request.remark(), httpRequest.getRemoteAddr())));
     }
 
     public record EmployeePermissionRequest(

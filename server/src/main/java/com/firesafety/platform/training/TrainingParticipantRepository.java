@@ -10,4 +10,5 @@ public interface TrainingParticipantRepository {
     Optional<TrainingParticipant> findByTaskIdAndUserIdForUpdate(Long taskId, Long userId);
     List<TrainingParticipant> findByUserId(Long userId);
     List<TrainingParticipant> findByTaskId(Long taskId);
+    List<TrainingParticipant> findAll();
 }

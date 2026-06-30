@@ -1,5 +1,8 @@
 package com.firesafety.platform.permission;
 
+import com.firesafety.platform.audit.AuditAction;
+import com.firesafety.platform.audit.AuditLogPort;
+import com.firesafety.platform.audit.AuditModule;
 import com.firesafety.platform.auth.SessionPrincipal;
 import com.firesafety.platform.auth.UserRole;
 import com.firesafety.platform.common.BusinessException;
@@ -16,16 +19,19 @@ public class PermissionRequestService {
     private final EnterpriseRepository enterprises;
     private final UserAccountRepository users;
     private final PermissionNotificationPort notifications;
+    private final AuditLogPort audit;
 
     public PermissionRequestService(
             PermissionRequestRepository requests,
             EnterpriseRepository enterprises,
             UserAccountRepository users,
-            PermissionNotificationPort notifications) {
+            PermissionNotificationPort notifications,
+            AuditLogPort audit) {
         this.requests = requests;
         this.enterprises = enterprises;
         this.users = users;
         this.notifications = notifications;
+        this.audit = audit;
     }
 
     public PermissionRequest requestEmployee(SessionPrincipal applicant, String name, String phone) {
@@ -45,6 +51,11 @@ public class PermissionRequestService {
     }
 
     public PermissionRequest approve(SessionPrincipal operator, Long requestId, String remark) {
+        return approve(operator, requestId, remark, null);
+    }
+
+    public PermissionRequest approve(
+            SessionPrincipal operator, Long requestId, String remark, String ipAddress) {
         requirePlatformOperator(operator);
         var request = findForReview(requestId);
         ensurePending(request);
@@ -56,16 +67,25 @@ public class PermissionRequestService {
                 request.enterpriseId(), request.requestedName(), request.requestedPhone(), UserRole.EMPLOYEE));
         var saved = requests.save(request);
         notifications.approved(saved);
+        audit.record(operator, AuditModule.PERMISSION, AuditAction.APPROVE,
+                saved.id(), "权限申请已通过", ipAddress);
         return saved;
     }
 
     public PermissionRequest reject(SessionPrincipal operator, Long requestId, String reason) {
+        return reject(operator, requestId, reason, null);
+    }
+
+    public PermissionRequest reject(
+            SessionPrincipal operator, Long requestId, String reason, String ipAddress) {
         requirePlatformOperator(operator);
         var request = findForReview(requestId);
         ensurePending(request);
         request.reject(operator.userId(), reason);
         var saved = requests.save(request);
         notifications.rejected(saved);
+        audit.record(operator, AuditModule.PERMISSION, AuditAction.REJECT,
+                saved.id(), "权限申请已驳回", ipAddress);
         return saved;
     }
 

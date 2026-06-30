@@ -1,5 +1,6 @@
 package com.firesafety.platform.repair;
 
+import com.firesafety.platform.audit.AuditLogPort;
 import com.firesafety.platform.security.DataScopeService;
 import com.firesafety.platform.security.EnterpriseScopeResolver;
 import com.firesafety.platform.file.FileStorage;
@@ -18,8 +19,9 @@ public class RepairConfiguration {
             RepairTicketRepository tickets,
             RepairHistoryRepository history,
             DataScopeService dataScope,
-            RepairNotificationPort notifications) {
-        return new RepairService(tickets, history, dataScope, notifications);
+            RepairNotificationPort notifications,
+            AuditLogPort audit) {
+        return new RepairService(tickets, history, dataScope, notifications, audit);
     }
 
     @Bean

@@ -1,5 +1,8 @@
 package com.firesafety.platform.repair;
 
+import com.firesafety.platform.audit.AuditAction;
+import com.firesafety.platform.audit.AuditLogPort;
+import com.firesafety.platform.audit.AuditModule;
 import com.firesafety.platform.auth.SessionPrincipal;
 import com.firesafety.platform.auth.UserRole;
 import com.firesafety.platform.common.BusinessException;
@@ -14,16 +17,19 @@ public class RepairService {
     private final RepairHistoryRepository history;
     private final DataScopeService dataScope;
     private final RepairNotificationPort notifications;
+    private final AuditLogPort audit;
 
     public RepairService(
             RepairTicketRepository tickets,
             RepairHistoryRepository history,
             DataScopeService dataScope,
-            RepairNotificationPort notifications) {
+            RepairNotificationPort notifications,
+            AuditLogPort audit) {
         this.tickets = tickets;
         this.history = history;
         this.dataScope = dataScope;
         this.notifications = notifications;
+        this.audit = audit;
     }
 
     public RepairTicket create(SessionPrincipal reporter, CreateRepairCommand command) {
@@ -37,27 +43,39 @@ public class RepairService {
     }
 
     public RepairTicket accept(SessionPrincipal operator, Long repairId, String remark) {
+        return accept(operator, repairId, remark, null);
+    }
+
+    public RepairTicket accept(SessionPrincipal operator, Long repairId, String remark, String ipAddress) {
         requirePlatformRole(operator);
         var ticket = findForUpdate(repairId);
         var from = ticket.status();
         ticket.accept(operator.userId());
-        return saveTransition(ticket, from, operator.userId(), remark);
+        return saveTransition(ticket, from, operator, remark, AuditAction.ACCEPT, ipAddress);
     }
 
     public RepairTicket complete(SessionPrincipal operator, Long repairId, String result) {
+        return complete(operator, repairId, result, null);
+    }
+
+    public RepairTicket complete(SessionPrincipal operator, Long repairId, String result, String ipAddress) {
         requirePlatformRole(operator);
         var ticket = findForUpdate(repairId);
         var from = ticket.status();
         ticket.complete(operator.userId(), result);
-        return saveTransition(ticket, from, operator.userId(), result);
+        return saveTransition(ticket, from, operator, result, AuditAction.COMPLETE, ipAddress);
     }
 
     public RepairTicket close(SessionPrincipal operator, Long repairId, String remark) {
+        return close(operator, repairId, remark, null);
+    }
+
+    public RepairTicket close(SessionPrincipal operator, Long repairId, String remark, String ipAddress) {
         requirePlatformRole(operator);
         var ticket = findForUpdate(repairId);
         var from = ticket.status();
         ticket.close();
-        return saveTransition(ticket, from, operator.userId(), remark);
+        return saveTransition(ticket, from, operator, remark, AuditAction.CLOSE, ipAddress);
     }
 
     @Transactional(readOnly = true)
@@ -87,11 +105,18 @@ public class RepairService {
     }
 
     private RepairTicket saveTransition(
-            RepairTicket ticket, RepairStatus from, Long operatorUserId, String remark) {
+            RepairTicket ticket,
+            RepairStatus from,
+            SessionPrincipal operator,
+            String remark,
+            AuditAction action,
+            String ipAddress) {
         var saved = tickets.save(ticket);
         history.save(RepairHistory.transition(
-                saved.id(), from, saved.status(), operatorUserId, remark));
+                saved.id(), from, saved.status(), operator.userId(), remark));
         notifications.statusChanged(saved);
+        audit.record(operator, AuditModule.REPAIR, action, saved.id(),
+                "工单状态由%s变更为%s".formatted(from.name(), saved.status().name()), ipAddress);
         return saved;
     }
 

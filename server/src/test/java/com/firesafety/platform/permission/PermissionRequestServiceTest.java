@@ -5,6 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.firesafety.platform.auth.SessionPrincipal;
 import com.firesafety.platform.auth.UserRole;
+import com.firesafety.platform.audit.AuditAction;
+import com.firesafety.platform.audit.AuditLogPort;
+import com.firesafety.platform.audit.AuditModule;
+import com.firesafety.platform.audit.OperationLog;
 import com.firesafety.platform.common.BusinessException;
 import com.firesafety.platform.organization.Enterprise;
 import com.firesafety.platform.organization.EnterpriseRepository;
@@ -25,8 +29,9 @@ class PermissionRequestServiceTest {
         var users = new MemoryUsers();
         var requests = new MemoryRequests();
         var notices = new RecordingPermissionNotifications();
+        var audit = new RecordingAudit();
         var headquarters = enterprises.save(Enterprise.headquarters("示例总部", "联系人", "13800000000"));
-        var service = new PermissionRequestService(requests, enterprises, users, notices);
+        var service = new PermissionRequestService(requests, enterprises, users, notices, audit);
         var applicant = new SessionPrincipal(11L, UserRole.ENTERPRISE_ADMIN, headquarters.id(), "企业管理员");
         var operator = new SessionPrincipal(1L, UserRole.PLATFORM_OPERATOR, null, "平台运营");
 
@@ -38,6 +43,7 @@ class PermissionRequestServiceTest {
                 .extracting(UserAccount::enterpriseId, UserAccount::role)
                 .containsExactly(headquarters.id(), UserRole.EMPLOYEE);
         assertThat(notices.events).containsExactly("APPROVED:" + request.id());
+        assertThat(audit.actions).containsExactly(AuditAction.APPROVE);
 
         assertThatThrownBy(() -> service.approve(operator, request.id(), "重复审批"))
                 .isInstanceOf(BusinessException.class)
@@ -51,7 +57,7 @@ class PermissionRequestServiceTest {
         var requests = new MemoryRequests();
         var headquarters = enterprises.save(Enterprise.headquarters("示例总部", "联系人", "13800000000"));
         var service = new PermissionRequestService(
-                requests, enterprises, new MemoryUsers(), new RecordingPermissionNotifications());
+                requests, enterprises, new MemoryUsers(), new RecordingPermissionNotifications(), new RecordingAudit());
         var applicant = new SessionPrincipal(11L, UserRole.ENTERPRISE_ADMIN, headquarters.id(), "企业管理员");
         var operator = new SessionPrincipal(1L, UserRole.PLATFORM_OPERATOR, null, "平台运营");
         var request = service.requestEmployee(applicant, "李四", "13900000000");
@@ -68,7 +74,7 @@ class PermissionRequestServiceTest {
         var requests = new MemoryRequests();
         var headquarters = enterprises.save(Enterprise.headquarters("示例总部", "联系人", "13800000000"));
         var service = new PermissionRequestService(
-                requests, enterprises, new MemoryUsers(), new RecordingPermissionNotifications());
+                requests, enterprises, new MemoryUsers(), new RecordingPermissionNotifications(), new RecordingAudit());
         var applicant = new SessionPrincipal(11L, UserRole.ENTERPRISE_ADMIN, headquarters.id(), "企业管理员");
         service.requestEmployee(applicant, "李四", "13900000000");
 
@@ -82,6 +88,16 @@ class PermissionRequestServiceTest {
         private final List<String> events = new ArrayList<>();
         @Override public void approved(PermissionRequest request) { events.add("APPROVED:" + request.id()); }
         @Override public void rejected(PermissionRequest request) { events.add("REJECTED:" + request.id()); }
+    }
+
+    private static final class RecordingAudit implements AuditLogPort {
+        private final List<AuditAction> actions = new ArrayList<>();
+        @Override public OperationLog record(
+                SessionPrincipal operator, AuditModule module, AuditAction action,
+                Long businessId, String detail, String ipAddress) {
+            actions.add(action);
+            return null;
+        }
     }
 
     private static final class MemoryRequests implements PermissionRequestRepository {

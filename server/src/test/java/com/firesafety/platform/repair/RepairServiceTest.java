@@ -5,6 +5,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.firesafety.platform.auth.SessionPrincipal;
 import com.firesafety.platform.auth.UserRole;
+import com.firesafety.platform.audit.AuditAction;
+import com.firesafety.platform.audit.AuditLogPort;
+import com.firesafety.platform.audit.AuditModule;
+import com.firesafety.platform.audit.OperationLog;
 import com.firesafety.platform.common.BusinessException;
 import com.firesafety.platform.security.DataScopeService;
 import com.firesafety.platform.security.EnterpriseScopeResolver;
@@ -19,8 +23,9 @@ import org.junit.jupiter.api.Test;
 class RepairServiceTest {
     private final MemoryTickets tickets = new MemoryTickets();
     private final MemoryHistory history = new MemoryHistory();
+    private final RecordingAudit audit = new RecordingAudit();
     private final RepairService service = new RepairService(
-            tickets, history, new DataScopeService(new FixedScopeResolver()), request -> {});
+            tickets, history, new DataScopeService(new FixedScopeResolver()), request -> {}, audit);
     private final SessionPrincipal employee =
             new SessionPrincipal(11L, UserRole.EMPLOYEE, 20L, "张三");
     private final SessionPrincipal operator =
@@ -45,6 +50,8 @@ class RepairServiceTest {
                         RepairStatus.PROCESSING,
                         RepairStatus.COMPLETED,
                         RepairStatus.CLOSED);
+        assertThat(audit.actions).containsExactly(
+                AuditAction.ACCEPT, AuditAction.COMPLETE, AuditAction.CLOSE);
     }
 
     @Test
@@ -78,6 +85,16 @@ class RepairServiceTest {
         @Override public Set<Long> allEnterpriseIds() { return Set.of(20L, 21L); }
         @Override public Set<Long> descendantsIncludingSelf(long enterpriseId) {
             return enterpriseId == 20L ? Set.of(20L, 21L) : Set.of(enterpriseId);
+        }
+    }
+
+    private static final class RecordingAudit implements AuditLogPort {
+        private final List<AuditAction> actions = new ArrayList<>();
+        @Override public OperationLog record(
+                SessionPrincipal operator, AuditModule module, AuditAction action,
+                Long businessId, String detail, String ipAddress) {
+            actions.add(action);
+            return null;
         }
     }
 

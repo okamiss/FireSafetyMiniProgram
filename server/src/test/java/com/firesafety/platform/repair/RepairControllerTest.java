@@ -67,7 +67,7 @@ class RepairControllerTest {
                 RepairUrgency.HIGH, "消防设施", "一号楼", "故障", "张三", "13800000000"));
         ticket.assignId(8L);
         ticket.accept(1L);
-        when(service.accept(principal, 8L, "已安排处理")).thenReturn(ticket);
+        when(service.accept(principal, 8L, "已安排处理", "127.0.0.1")).thenReturn(ticket);
 
         mockMvc.perform(post("/api/admin/repairs/8/accept")
                         .contentType(MediaType.APPLICATION_JSON)

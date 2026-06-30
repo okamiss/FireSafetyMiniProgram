@@ -5,6 +5,7 @@ import com.firesafety.platform.auth.SessionService;
 import com.firesafety.platform.auth.WeChatAuthenticationService;
 import com.firesafety.platform.auth.WeChatBindingTicketStore;
 import com.firesafety.platform.auth.WeChatIdentityProvider;
+import com.firesafety.platform.audit.AuditLogPort;
 import com.firesafety.platform.organization.EnterpriseRepository;
 import com.firesafety.platform.organization.UserAccountRepository;
 import com.firesafety.platform.organization.OrganizationService;
@@ -19,8 +20,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class IdentityServicesConfiguration {
     @Bean
     AdminAuthenticationService adminAuthenticationService(
-            UserAccountRepository users, PasswordEncoder encoder, SessionService sessions) {
-        return new AdminAuthenticationService(users, encoder, sessions);
+            UserAccountRepository users,
+            PasswordEncoder encoder,
+            SessionService sessions,
+            AuditLogPort audit) {
+        return new AdminAuthenticationService(users, encoder, sessions, audit);
     }
 
     @Bean
@@ -37,8 +41,9 @@ public class IdentityServicesConfiguration {
             PermissionRequestRepository requests,
             EnterpriseRepository enterprises,
             UserAccountRepository users,
-            PermissionNotificationPort notifications) {
-        return new PermissionRequestService(requests, enterprises, users, notifications);
+            PermissionNotificationPort notifications,
+            AuditLogPort audit) {
+        return new PermissionRequestService(requests, enterprises, users, notifications, audit);
     }
 
     @Bean

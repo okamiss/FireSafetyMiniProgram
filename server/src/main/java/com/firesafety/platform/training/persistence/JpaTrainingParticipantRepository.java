@@ -45,6 +45,9 @@ public class JpaTrainingParticipantRepository implements TrainingParticipantRepo
     @Override public List<TrainingParticipant> findByTaskId(Long taskId) {
         return jpa.findAllByTaskId(taskId).stream().map(this::toDomain).toList();
     }
+    @Override public List<TrainingParticipant> findAll() {
+        return jpa.findAll().stream().map(this::toDomain).toList();
+    }
 
     private TrainingParticipant toDomain(TrainingParticipantEntity entity) {
         return TrainingParticipant.restore(entity.id, entity.taskId, entity.userId, entity.enterpriseId,

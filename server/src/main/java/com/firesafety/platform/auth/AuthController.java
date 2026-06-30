@@ -4,6 +4,7 @@ import com.firesafety.platform.common.ApiResponse;
 import com.firesafety.platform.common.BusinessException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -33,8 +34,10 @@ public class AuthController {
     }
 
     @PostMapping("/admin-login")
-    public ApiResponse<AuthenticationResult> adminLogin(@Valid @RequestBody AdminLoginRequest request) {
-        return ApiResponse.ok(adminAuthentication.login(request.username(), request.password()));
+    public ApiResponse<AuthenticationResult> adminLogin(
+            @Valid @RequestBody AdminLoginRequest request, HttpServletRequest httpRequest) {
+        return ApiResponse.ok(adminAuthentication.login(
+                request.username(), request.password(), httpRequest.getRemoteAddr()));
     }
 
     @PostMapping("/wechat-login")

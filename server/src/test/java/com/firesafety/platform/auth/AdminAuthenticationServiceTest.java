@@ -3,6 +3,10 @@ package com.firesafety.platform.auth;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.firesafety.platform.audit.AuditAction;
+import com.firesafety.platform.audit.AuditLogPort;
+import com.firesafety.platform.audit.AuditModule;
+import com.firesafety.platform.audit.OperationLog;
 import com.firesafety.platform.common.BusinessException;
 import com.firesafety.platform.organization.UserAccount;
 import com.firesafety.platform.organization.UserAccountRepository;
@@ -21,7 +25,8 @@ class AdminAuthenticationServiceTest {
     private final MemoryUsers users = new MemoryUsers();
     private final SessionService sessions = new SessionService(
             new InMemorySessionStore(), Clock.systemUTC(), Duration.ofHours(2), Duration.ofDays(30));
-    private final AdminAuthenticationService service = new AdminAuthenticationService(users, encoder, sessions);
+    private final RecordingAudit audit = new RecordingAudit();
+    private final AdminAuthenticationService service = new AdminAuthenticationService(users, encoder, sessions, audit);
 
     @Test
     void authenticatesEnabledPlatformAccountAndIssuesSession() {
@@ -31,6 +36,7 @@ class AdminAuthenticationServiceTest {
 
         assertThat(result.user().role()).isEqualTo(UserRole.SUPER_ADMIN);
         assertThat(sessions.resolve(result.tokens().accessToken())).contains(result.user());
+        assertThat(audit.actions).containsExactly(AuditAction.ADMIN_LOGIN);
     }
 
     @Test
@@ -40,6 +46,16 @@ class AdminAuthenticationServiceTest {
         assertThatThrownBy(() -> service.login("admin", "wrong"))
                 .isInstanceOf(BusinessException.class)
                 .satisfies(error -> assertThat(((BusinessException) error).code()).isEqualTo("INVALID_CREDENTIALS"));
+    }
+
+    private static final class RecordingAudit implements AuditLogPort {
+        private final java.util.List<AuditAction> actions = new java.util.ArrayList<>();
+        @Override public OperationLog record(
+                SessionPrincipal operator, AuditModule module, AuditAction action,
+                Long businessId, String detail, String ipAddress) {
+            actions.add(action);
+            return null;
+        }
     }
 
     private static final class MemoryUsers implements UserAccountRepository {
